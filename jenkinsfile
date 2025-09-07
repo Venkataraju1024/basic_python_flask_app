@@ -1,28 +1,30 @@
 pipeline {
     agent any 
     environment {
-        IMAGE_NAME = "my-flask-app"
-        CONTAINER_NAME = "flask-app-container"
+        IMAGE_NAME = "venkataraju1994/jenkins_apps"
+        CONTAINER_NAME = "jenkins_apps"
+        DOCKERHUB_USER = "venkataraju1994"
     }
     stages {
-        stage("Checkout Code") {
-            steps { 
-                git 'https://github.com/Venkataraju1024/basic_python_flask_app'
+        stage('Checkout') {
+            steps {
+                git branch: 'master', url: 'https://github.com/Venkataraju1024/basic_python_flask_app'
             }
         }
-        stage("Build") {
+        stage('Build Docker image') {
             steps {
-                sh "echo building the apps"
-            }
+                sh 'docker build -t $IMAGE_NAME:latest .'
+            }  
         }
-        stage("Test") {
+        stage('Push to DockerHub') {
             steps {
-                sh "echo running tests"
-            }
-        }
-        stage("Deploy") {
-            steps {
-                sh "echo deploying app"
+                withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        docker push $IMAGE_NAME:latest
+                        docker logout
+                    '''
+                }  
             }
         }
     }
