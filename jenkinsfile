@@ -1,29 +1,29 @@
-pipeline{
+pipeline {
     agent any 
     environment {
         IMAGE_NAME = "my-flask-app"
         CONTAINER_NAME = "flask-app-container"
     }
-    stage{
-    stage("checkout code"){
-    steps{ 
-    git 'https://github.com/Venkataraju1024/basic_python_flask_app'
+    stages {
+        stage("Checkout Code") {
+            steps { 
+                git 'https://github.com/Venkataraju1024/basic_python_flask_app'
+            }
         }
+        stage("Build") {
+            steps {
+                sh "echo building the apps"
+            }
         }
-    stage("Build"){
-    steps{
-      sh "echo building the apps"
+        stage("Test") {
+            steps {
+                sh "echo running tests"
+            }
+        }
+        stage("Deploy") {
+            steps {
+                sh "echo deploying app"
+            }
+        }
     }
-    }
-   stage("Test")
-    steps{
-      sh "echo running tests"
-      }
-      }
-    stage("deploy")
-    steps{
-    sh 'echo deploying app'
-    }
-    }
-}
 }
